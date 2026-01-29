@@ -8,13 +8,19 @@ import {
 } from "@/components/ui/item"
 import { Trash2 } from "lucide-react"
 import { supabase } from "./supabaseClient"
+export default function List({ users, onUserDeleted }) {
 
-export default function List() {
+    const deleteUser = async (id) => {
+        const { error } = await supabase.from("Login").delete().eq("id", id)
 
-    const { data: users, error } = supabase.from("Login").select()
-
-    if (error) {
-        console.log("Erro ao buscar usuarios", error)
+        if (error) {
+            console.log("Erro ao deletar usuario", error)
+        } else {
+            console.log("Usuario deletado com sucesso")
+            if (onUserDeleted) {
+                onUserDeleted()
+            }
+        }
     }
 
     return (
@@ -28,7 +34,7 @@ export default function List() {
                         </ItemDescription>
                     </ItemContent>
                     <ItemActions>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => deleteUser(user.id)}>
                             <Trash2 className="size-4" />
                         </Button>
                     </ItemActions>

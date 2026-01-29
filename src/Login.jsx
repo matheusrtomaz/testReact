@@ -12,32 +12,22 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { supabase } from "./supabaseClient"
 
-export default function Login() {
-    const [name, setName] = useState([])
+export default function Login({ onUserAdded }) {
+    const [name, setName] = useState("")
     const [age, setAge] = useState("")
-
-    const fetchUsers = async () => {
-        const { data, error } = await supabase.from("Login").select("*")
-
-        if (error) {
-            console.log("Erro ao buscar usuarios", error)
-        } else {
-            setName(data)
-            setAge("")
-        }
-    }
 
     const addUser = async () => {
         const newUserData = {
             name: name,
             age: age
         }
-        const { data, error } = await supabase.from("Login").insert([newUserData]).single()
+        const { error } = await supabase.from("Login").insert([newUserData]).single()
 
         if (error) {
             console.log("Erro ao adicionar usuario", error)
         } else {
-            setName((prev) => [...prev, data])
+            if (onUserAdded) onUserAdded()
+            setName("")
             setAge("")
         }
     }
@@ -45,26 +35,23 @@ export default function Login() {
     return (
         <Card className="w-full max-w-sm text-left">
             <CardHeader>
-                <CardTitle className="text-2xl">Login</CardTitle>
+                <CardTitle className="text-2xl">Registrar</CardTitle>
                 <CardDescription>
-                    Enter your name and age to register
+                    Insira seu nome e idade para se registrar
                 </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
                 <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" type="text" placeholder="m@example.com" value={name} required onChange={(e) => setName(e.target.value)} />
+                    <Label htmlFor="name">Nome</Label>
+                    <Input id="name" type="text" placeholder="Seu nome" value={name} required onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className="grid gap-2">
-                    <Label htmlFor="age">Age</Label>
-                    <Input id="age" type="number" value={age} required onChange={(e) => setAge(e.target.value)} />
+                    <Label htmlFor="age">Idade</Label>
+                    <Input id="age" type="number" placeholder="Sua idade" value={age} required onChange={(e) => setAge(e.target.value)} />
                 </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-2">
-                <Button className="w-full" onClick={addUser}>Sign in</Button>
-                <Button variant="outline" className="w-full">
-                    Login with Google
-                </Button>
+                <Button variant="outline" className="w-full" onClick={addUser}>Registrar</Button>
             </CardFooter>
         </Card>
     )
