@@ -1,38 +1,28 @@
 import './App.css'
-import Login from "./Login"
-import List from "./List"
-import { FieldSeparator } from "@/components/ui/fieldset"
-import { useEffect, useState, useCallback } from "react"
-import { supabase } from "./supabaseClient"
+import HomePage from "./pages/HomePage"
+import LoginPage from "./pages/LoginPage"
+import RegisterPage from "./pages/RegisterPage"
+import { Button } from './components/ui/button'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 
 function App() {
-  const [users, setUsers] = useState([])
-
-  const fetchUsers = useCallback(async () => {
-    const { data, error } = await supabase.from("Login").select("*")
-
-    if (error) {
-      console.log("Erro ao buscar usuarios", error)
-    } else {
-      console.log("Usuarios buscados:", data)
-      setUsers(data)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchUsers()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  const navigate = useNavigate()
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-      <Login onUserAdded={fetchUsers} />
-      <div className="w-[382.4px]">
-        <FieldSeparator />
+      <div>
+        <Button variant="outline" onClick={() => navigate("/")}>Início</Button>
+        <span className="mx-2" />
+        <Button variant="outline" onClick={() => navigate("/login")}>Login</Button>
+        <span className="mx-2" />
+        <Button variant="outline" onClick={() => navigate("/register")}>Registrar</Button>
       </div>
-      <div className="w-[382.4px]">
-        <List users={users} onUserDeleted={fetchUsers} />
-      </div>
+
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+      </Routes>
     </div>
   )
 }
